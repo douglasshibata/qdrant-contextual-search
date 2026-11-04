@@ -1,0 +1,27 @@
+services:
+  contextual-search:
+    image: python:3.11-slim
+    container_name: qdrant-contextual-search
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - qdrant
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python3 main.py"
+    restart: "no"
+
+  qdrant:
+    image: qdrant/qdrant:v1.9.0
+    container_name: contextual-search-qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
